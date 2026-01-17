@@ -1,16 +1,17 @@
+// Переход между комнатами
 function goToRoom(id){
   document.querySelectorAll('.room').forEach(r=>r.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
 
-// Пользователь
+// Сохранение данных пользователя
 document.getElementById('userForm').addEventListener('submit', e=>{
   e.preventDefault();
   localStorage.setItem('user', JSON.stringify({ name:name.value, age:age.value }));
   goToRoom('tests');
 });
 
-// Звуки Web Audio API
+// Звуки (тикание и сердцебиение)
 const audioCtx = new (window.AudioContext||window.webkitAudioContext)();
 function playTick(){const o=audioCtx.createOscillator(); o.frequency.value=1000; o.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+0.05);}
 function playHeart(){const o=audioCtx.createOscillator(); o.frequency.value=80; o.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+0.2);}
@@ -20,90 +21,130 @@ let current=0, score=0, answered=0, time=10, timer, stressLevel=0, activeTest;
 
 const tests = {
   logic:{title:"ЛОГИКА", questions:[
-    {q:"Информация противоречива?", a:[["Проверяю",3],["Верю",1],["Игнорирую",0]]},
-    {q:"Сложная задача?", a:[["Делю на части",3],["Импровизирую",1],["Бросаю",0]]},
-    {q:"Ошибка — это?", a:[["Опыт",3],["Провал",0],["Случайность",1]]},
-    {q:"Неочевидное решение?", a:[["Анализирую",3],["Интуиция",1],["Пауза",0]]},
-    {q:"Ты думаешь о?", a:[["Последствиях",3],["Сейчас",1],["Редко",0]]}
+    {q:"Когда получаешь противоречивую информацию, как действуешь?", 
+     a:[["Проверяю каждый источник и факты",3],["Принимаю то, что кажется правильным",1],["Не обращаю внимания и продолжаю",0]]},
+    {q:"Перед сложной задачей, что делаешь?", 
+     a:[["Разбиваю задачу на маленькие шаги",3],["Делаю наугад",1],["Откладываю и жду решения",0]]},
+    {q:"Если допустил ошибку, как реагируешь?", 
+     a:[["Учусь на ошибке",3],["Думаю, что всё провалилось",0],["Считаю случайностью",1]]},
+    {q:"Нужно придумать нестандартное решение, что делаешь?", 
+     a:[["Анализирую и сравниваю варианты",3],["Делаю интуитивно",1],["Жду, пока кто-то решит",0]]},
+    {q:"Когда принимаешь решение, о чём думаешь?", 
+     a:[["О последствиях и рисках",3],["О текущем моменте",1],["Редко думаю о последствиях",0]]}
   ]},
   drive:{title:"СТРЕМЛЕНИЕ", questions:[
-    {q:"Сложная цель?", a:[["Иду до конца",3],["Пробую",1],["Сдаюсь",0]]},
-    {q:"Нет мотивации?", a:[["Дисциплина",3],["Жду",1],["Бросаю",0]]},
-    {q:"Ты чаще?", a:[["Завершаю",3],["Начинаю",1],["Бросаю",0]]},
-    {q:"Неудача?", a:[["Временная",3],["Сбивает",1],["Конец",0]]},
-    {q:"Контроль?", a:[["Сам",3],["Сложно",1],["Нет",0]]}
+    {q:"Есть важная цель. Что делаешь?", 
+     a:[["Иду до конца",3],["Пробую, если есть настроение",1],["Сдаюсь, если сложно",0]]},
+    {q:"Нет мотивации, как поступаешь?", 
+     a:[["Применяю дисциплину",3],["Жду вдохновения",1],["Бросаю попытку",0]]},
+    {q:"Ты завершаешь начатое?", 
+     a:[["Да, всегда",3],["Иногда откладываю",1],["Редко завершаю",0]]},
+    {q:"Неудача случилась. Как реагируешь?", 
+     a:[["Считаю временной и продолжаю",3],["Сбивает с толку",1],["Думаю, что всё потеряно",0]]},
+    {q:"Контролируешь процесс задачи?", 
+     a:[["Да, полностью",3],["Частично",1],["Нет",0]]}
   ]},
   choice:{title:"ВЫБОР", questions:[
-    {q:"Под давлением?", a:[["Хладнокровен",3],["Импульсивен",1],["Паникую",0]]},
-    {q:"Ошибка?", a:[["Принимаю",3],["Оправдания",1],["Избегаю",0]]},
-    {q:"Риск?", a:[["Осознанный",3],["Интуитивный",1],["Избегаю",0]]},
-    {q:"Сложный путь?", a:[["Выбираю",3],["Иногда",1],["Нет",0]]},
-    {q:"Последствия?", a:[["Принимаю",3],["Откладываю",1],["Боюсь",0]]}
-  ]},
-  dark:{title:"DARK ROOM", questions:[
-    {q:"Спасёшь одного ценой пяти?", a:[["Да",3],["Нет",1],["Не решу",0]]},
-    {q:"Скажешь правду?", a:[["Да",3],["Нет",1],["Промолчу",0]]},
-    {q:"Цель оправдывает средства?", a:[["Иногда",3],["Нет",1],["Да",0]]},
-    {q:"Пожертвуешь собой?", a:[["Да",3],["Зависит",1],["Нет",0]]},
-    {q:"Мораль абсолютна?", a:[["Нет",3],["Иногда",1],["Да",0]]}
-  ]},
-  silence:{title:"РЕЖИМ ТИШИНЫ", questions:[
-    {q:"Ты наблюдаешь мысли?", a:[["Да",3],["Иногда",1],["Нет",0]]},
-    {q:"Сосредоточен на ощущениях?", a:[["Да",3],["Частично",1],["Нет",0]]},
-    {q:"Следишь за дыханием?", a:[["Да",3],["Иногда",1],["Нет",0]]},
-    {q:"Внутренний шум?", a:[["Минимальный",3],["Средний",1],["Высокий",0]]},
-    {q:"Ощущение времени?", a:[["Контроль",3],["Сжатие",1],["Потеря",0]]}
+    {q:"При давлении со стороны, как действуешь?", 
+     a:[["Хладнокровно принимаю решение",3],["Иногда импульсивно",1],["Панически реагирую",0]]},
+    {q:"Ошибка произошла. Твои действия?", 
+     a:[["Принимаю и исправляю",3],["Ищу оправдания",1],["Избегаю и не решаю",0]]},
+    {q:"Перед риском, как поступаешь?", 
+     a:[["Планирую и осознанно иду",3],["Иду интуитивно",1],["Избегаю риска",0]]},
+    {q:"Сложный выбор, что делаешь?", 
+     a:[["Выбираю и стараюсь пройти",3],["Иногда пробую осторожно",1],["Не выбираю сложный путь",0]]},
+    {q:"Последствия решений?", 
+     a:[["Принимаю и оцениваю",3],["Откладываю анализ",1],["Боюсь и избегаю",0]]}
   ]}
 };
 
+// Запуск теста
 function startTest(type){
-  activeTest=tests[type]; current=0; score=0; answered=0; stressLevel=0;
-  applyStress(); document.getElementById('testTitle').innerText=activeTest.title;
-  goToRoom('test'); showQuestion();
+  activeTest = tests[type];
+  current = 0; score = 0; answered = 0; stressLevel = 0;
+  document.body.classList.add('stress-low');
+  document.getElementById('testTitle').innerText = activeTest.title;
+  goToRoom('test');
+  showQuestion();
 }
 
+// Применение стресса (мягкая тряска)
 function applyStress(){
   document.body.classList.remove('stress-low','stress-mid','stress-high');
-  document.body.classList.add(stressLevel===0?"stress-low":stressLevel===1?"stress-mid":"stress-high");
-  const testSection=document.getElementById('test');
-  if(stressLevel===2){ testSection.classList.add('stress-high'); }
-  else{ testSection.classList.remove('stress-high'); }
+  if(stressLevel===0) document.body.classList.add('stress-low');
+  else if(stressLevel===1) document.body.classList.add('stress-mid');
+  else document.body.classList.add('stress-high');
 }
 
+// Показ вопроса
 function showQuestion(){
   resetTimer();
-  const q=activeTest.questions[current];
-  const qEl=document.getElementById('question'); qEl.classList.remove('fade'); void qEl.offsetWidth; qEl.classList.add('fade'); qEl.innerText=q.q;
+  const q = activeTest.questions[current];
+  const qEl = document.getElementById('question');
+  qEl.classList.remove('fade'); void qEl.offsetWidth; qEl.classList.add('fade');
+  qEl.innerText = q.q;
 
-  const aEl=document.getElementById('answers'); aEl.innerHTML="";
-  q.a.forEach(([t,p])=>{
-    const b=document.createElement('button'); b.innerText=t;
-    b.onclick=()=>{score+=p; answered++; next();}; aEl.appendChild(b);
+  const aEl = document.getElementById('answers');
+  aEl.innerHTML = "";
+  q.a.forEach(([text, points])=>{
+    const b = document.createElement('button');
+    b.innerText = text;
+    b.onclick = ()=>{ score+=points; answered++; next(); };
+    aEl.appendChild(b);
   });
 }
 
+// Таймер
 function resetTimer(){
-  clearInterval(timer); time=stressLevel===2?5:stressLevel===1?7:10;
-  timer=setInterval(()=>{
-    time--; document.getElementById('timer').innerText="⏳ "+time;
+  clearInterval(timer);
+  time = 10;
+  timer = setInterval(()=>{
+    time--;
+    document.getElementById('timer').innerText="⏳ "+time;
     if(time<=3){ playTick(); playHeart(); }
     if(time<=0){ stressLevel++; applyStress(); next(); }
   },1000);
 }
 
-function next(){ clearInterval(timer); current++; current<5 ? showQuestion() : showResult(); }
+// Переход к следующему вопросу
+function next(){
+  clearInterval(timer);
+  current++;
+  if(current < 5){
+    showQuestion();
+  } else {
+    showResult();
+  }
+}
 
+// Показ результата
 function showResult(){
   clearInterval(timer);
+
+  // Отключаем тряску после окончания теста
+  document.getElementById('test').classList.remove('stress-high');
+  document.body.classList.remove('stress-high','stress-mid','stress-low');
+  document.body.classList.add('stress-low');
+
   let state, analysis;
   if(answered===0){ 
-    state="ПЕРЕГРУЗКА"; 
-    analysis=`Ты не выбрал ни одного варианта. Это указывает на высокую пассивность и потенциально тяжёлые дни впереди.`;
-  } else if(stressLevel<=1 && score>=12){ state="КОНТРОЛЬ"; analysis=`Ты сохранил ясность мышления под давлением. Ты анализируешь информацию, не теряя самообладания. В стрессовой среде ты склонен опираться на факты, а не на эмоции.`; }
-  else if(score>=7){ state="НАПРЯЖЕНИЕ"; analysis=`Давление начало влиять на мышление. Решения стали быстрее, но менее глубокими. Ты способен действовать, но риск ошибок возрастает.`; }
-  else { state="ПЕРЕГРУЗКА"; analysis=`Стресс сузил мышление. Решения принимались импульсивно или автоматически. Осознание этого — первый шаг к контролю.`; }
+      state="ПЕРЕГРУЗКА"; 
+      analysis=`Ты не выбрал ни одного варианта. Это указывает на высокую пассивность и потенциально трудные дни впереди.`;
+  } else if(stressLevel<=1 && score>=12){ 
+      state="КОНТРОЛЬ"; 
+      analysis=`Ты сохранил ясность мышления под давлением. Решения продуманы, ты анализируешь информацию без паники.`; 
+  } else if(score>=7){ 
+      state="НАПРЯЖЕНИЕ"; 
+      analysis=`Стресс начинает влиять на мышление. Решения принимаются быстрее, но иногда менее продуманно.`; 
+  } else { 
+      state="ПЕРЕГРУЗКА"; 
+      analysis=`Высокий стресс ограничил мышление. Решения принимались импульсивно или автоматически.`; 
+  }
 
-  document.getElementById('resultText').innerHTML=`<strong>Состояние: ${state}</strong><br><br>${analysis}`;
+  document.getElementById('resultText').innerHTML = `<strong>Состояние: ${state}</strong><br><br>${analysis}`;
+
+  // Сохраняем результаты в localStorage
   localStorage.setItem(activeTest.title, JSON.stringify({score, stressLevel, answered, date:new Date().toLocaleString()}));
+
   goToRoom('result');
 }
