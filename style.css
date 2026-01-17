@@ -15,9 +15,10 @@ body {
 .room { min-height:100vh; display:none; flex-direction:column; justify-content:center; align-items:center; padding:40px; text-align:center;}
 .room.active { display:flex; }
 
-button { padding:12px 30px; background:transparent; border:1px solid darkred; color:#fff; cursor:pointer; transition:.3s;}
+button { padding:12px 30px; background:transparent; border-radius: 5px; border:1px solid darkred; color:#fff; cursor:pointer; transition:.3s;}
 button:hover{background:darkred;}
 
+h2{ margin-bottom: 20px; color: darkred;}
 form { display:flex; flex-direction:column; gap:15px; width:260px; }
 input { padding:10px; background:#111; border:1px solid #333; color:white; }
 
@@ -38,10 +39,20 @@ input { padding:10px; background:#111; border:1px solid #333; color:white; }
 
 .stress-low { background:#050505; }
 .stress-mid { background:#120000; }
-.stress-high { background:#300000; animation:shake .15s infinite; position:relative; }
-@keyframes shake {0%{transform:translate(0);}25%{transform:translate(2px,-2px);}50%{transform:translate(-2px,2px);}75%{transform:translate(2px,2px);}100%{transform:translate(0);}}
+.stress-high { 
+  background:#300000; 
+  animation:shake 0.10s infinite; /* чуть дольше, мягче */
+  position:relative; 
+}
 
-/* Кровавые края при стрессовом уровне */
+@keyframes shake {
+  0%{transform:translate(0);}
+  25%{transform:translate(1px,-1px);}
+  50%{transform:translate(-1px,1px);}
+  75%{transform:translate(1px,1px);}
+  100%{transform:translate(0);}
+}
+
 #test.stress-high::before {
   content:"";
   position:fixed;
@@ -52,7 +63,6 @@ input { padding:10px; background:#111; border:1px solid #333; color:white; }
   z-index:1000;
 }
 
-/* Приветственное изображение */
 .welcome-image { width: 300px; margin: 20px auto; perspective: 1000px; }
 .welcome-image img {
   width: 100%;
@@ -62,5 +72,4 @@ input { padding:10px; background:#111; border:1px solid #333; color:white; }
   transition: transform 0.2s ease, filter 0.3s ease;
 }
 
-/* Кровавый шрифт для комнат сознания */
 .mindTitle { color:#aa0000; font-size:28px; margin-bottom:30px; text-shadow: 1px 1px 4px black; }
