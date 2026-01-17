@@ -6,16 +6,14 @@ function goToRoom(id){
 // Пользователь
 document.getElementById('userForm').addEventListener('submit', e=>{
   e.preventDefault();
-  localStorage.setItem('user', JSON.stringify({
-    name:name.value, age:age.value
-  }));
+  localStorage.setItem('user', JSON.stringify({ name:name.value, age:age.value }));
   goToRoom('tests');
 });
 
-// Web Audio API для звука
+// Звуки Web Audio API
 const audioCtx = new (window.AudioContext||window.webkitAudioContext)();
-function playTick(){const o=audioCtx.createOscillator();o.frequency.value=1000;o.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+0.05);}
-function playHeart(){const o=audioCtx.createOscillator();o.frequency.value=80;o.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+0.2);}
+function playTick(){const o=audioCtx.createOscillator(); o.frequency.value=1000; o.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+0.05);}
+function playHeart(){const o=audioCtx.createOscillator(); o.frequency.value=80; o.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+0.2);}
 
 // Тесты
 let current=0, score=0, answered=0, time=10, timer, stressLevel=0, activeTest;
@@ -64,7 +62,13 @@ function startTest(type){
   goToRoom('test'); showQuestion();
 }
 
-function applyStress(){document.body.className=stressLevel===0?"stress-low":stressLevel===1?"stress-mid":"stress-high";}
+function applyStress(){
+  document.body.classList.remove('stress-low','stress-mid','stress-high');
+  document.body.classList.add(stressLevel===0?"stress-low":stressLevel===1?"stress-mid":"stress-high");
+  const testSection=document.getElementById('test');
+  if(stressLevel===2){ testSection.classList.add('stress-high'); }
+  else{ testSection.classList.remove('stress-high'); }
+}
 
 function showQuestion(){
   resetTimer();
@@ -94,7 +98,7 @@ function showResult(){
   let state, analysis;
   if(answered===0){ 
     state="ПЕРЕГРУЗКА"; 
-    analysis=`Ты не выбрал ни одного варианта. Это указывает на высокую пассивность и потенциально тяжелые дни впереди.`;
+    analysis=`Ты не выбрал ни одного варианта. Это указывает на высокую пассивность и потенциально тяжёлые дни впереди.`;
   } else if(stressLevel<=1 && score>=12){ state="КОНТРОЛЬ"; analysis=`Ты сохранил ясность мышления под давлением. Ты анализируешь информацию, не теряя самообладания. В стрессовой среде ты склонен опираться на факты, а не на эмоции.`; }
   else if(score>=7){ state="НАПРЯЖЕНИЕ"; analysis=`Давление начало влиять на мышление. Решения стали быстрее, но менее глубокими. Ты способен действовать, но риск ошибок возрастает.`; }
   else { state="ПЕРЕГРУЗКА"; analysis=`Стресс сузил мышление. Решения принимались импульсивно или автоматически. Осознание этого — первый шаг к контролю.`; }
@@ -103,15 +107,3 @@ function showResult(){
   localStorage.setItem(activeTest.title, JSON.stringify({score, stressLevel, answered, date:new Date().toLocaleString()}));
   goToRoom('result');
 }
-
-const darkImg = document.querySelector('.dark_image img');
-
-document.addEventListener('mousemove', (e) => {
-  const x = (window.innerWidth / 2 - e.clientX) / 40; // горизонт
-  const y = (window.innerHeight / 2 - e.clientY) / 40; // вертикаль
-  darkImg.style.transform = `rotateY(${x}deg) rotateX(${y}deg) scale(1.05)`;
-});
-
-document.addEventListener('mouseleave', () => {
-  darkImg.style.transform = 'rotateY(0deg) rotateX(0deg) scale(1.05)';
-});
