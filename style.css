@@ -1,0 +1,65 @@
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background:#050505;
+  color:#eee;
+  font-family:'Courier New', monospace;
+  letter-spacing:1px;
+  transition: background 0.5s;
+}
+
+.dark_image {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: -1;
+  perspective: 1000px; /* для 3D */
+}
+
+.dark_image img {
+  width: 110%; /* чуть больше экрана для движения */
+  height: 110%;
+  object-fit: cover;
+  filter: brightness(0.25) contrast(1.2) blur(1px);
+  transform-style: preserve-3d;
+  transition: transform 0.1s ease, filter 0.3s ease;
+}
+
+
+.title { font-size:42px; letter-spacing:6px; }
+.text { max-width:600px; color:#bbb; margin:20px 0; }
+.disclaimer { font-size:12px; color:#666; margin-bottom:30px; }
+
+.room { min-height:100vh; display:none; flex-direction:column; justify-content:center; align-items:center; padding:40px; text-align:center;}
+.room.active { display:flex; }
+
+button { padding:12px 30px; background:transparent; border:1px solid darkred; color:#fff; cursor:pointer; transition:.3s;}
+button:hover{background:darkred;}
+
+form { display:flex; flex-direction:column; gap:15px; width:260px; }
+input { padding:10px; background:#111; border:1px solid #333; color:white; }
+
+.cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:30px; width:100%; max-width:1000px; }
+
+.card.big { padding:40px; background:#0f0f0f; border:1px solid #222; cursor:pointer; transition:.4s; }
+.card.big:hover { transform:translateY(-10px) scale(1.02); border-color:darkred; }
+.card.dark { background:#120000; }
+.card.darkBrand { background:#200000; border:2px solid red; }
+.card.silence { background:#050505; border:2px dashed #880000; }
+
+#timer { color:darkred; margin-bottom:20px; font-size:18px; }
+#answers { width:100%; max-width:500px; }
+#answers button { width:100%; margin:8px 0; }
+
+.fade { animation:fade .4s ease; }
+@keyframes fade { from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
+
+.stress-low { background:#050505; }
+.stress-mid { background:#120000; }
+.stress-high { background:#300000; animation:shake .15s infinite; }
+@keyframes shake {0%{transform:translate(0);}25%{transform:translate(2px,-2px);}50%{transform:translate(-2px,2px);}75%{transform:translate(2px,2px);}100%{transform:translate(0);}}
+
+.mindTitle { color:#aa0000; font-size:28px; margin-bottom:30px; }

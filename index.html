@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Dark_rooms</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="stress-low">
+
+    <div class="dark_image">
+        <img src="The dark triad.jpeg" alt="Dark Image">
+    </div>
+
+<section class="room active" id="welcome">
+  <h1 class="title">DARK ROOMS</h1>
+  <p class="text">
+    Ты входишь туда, где проверяется мышление под давлением.
+  </p>
+  <p class="disclaimer">
+    Проект не является психологическим диагнозом.
+    Это эксперимент самонаблюдения.
+  </p>
+  <button onclick="goToRoom('user')">Войти</button>
+</section>
+
+<section class="room" id="user">
+  <h2>Идентификация</h2>
+  <form id="userForm">
+    <input id="name" placeholder="Имя" required>
+    <input id="age" type="number" placeholder="Возраст" required>
+    <button type="submit">Продолжить</button>
+  </form>
+</section>
+
+<section class="room" id="tests">
+  <h2 class="mindTitle">КОМНАТЫ СОЗНАНИЯ</h2>
+  <div class="cards">
+    <div class="card big" onclick="startTest('logic')">
+      <h3>ЛОГИКА</h3>
+      <p>Анализ • мышление • факты</p>
+    </div>
+    <div class="card big" onclick="startTest('drive')">
+      <h3>СТРЕМЛЕНИЕ</h3>
+      <p>Воля • дисциплина • цель</p>
+    </div>
+    <div class="card big dark" onclick="startTest('choice')">
+      <h3>ВЫБОР</h3>
+      <p>Риск • ответственность • давление</p>
+    </div>
+    <div class="card big darkBrand" onclick="startTest('dark')">
+      <h3>DARK ROOM</h3>
+      <p>Мораль • брендовое состояние</p>
+    </div>
+    <div class="card big silence" onclick="startTest('silence')">
+      <h3>РЕЖИМ ТИШИНЫ</h3>
+      <p>Внутреннее наблюдение</p>
+    </div>
+  </div>
+</section>
+
+<section class="room" id="test">
+  <h2 id="testTitle"></h2>
+  <div id="timer">⏳ 10</div>
+  <p id="question" class="fade"></p>
+  <div id="answers"></div>
+</section>
+
+<section class="room" id="result">
+  <h2>Результат</h2>
+  <div id="resultText"></div>
+  <button onclick="goToRoom('tests')">Вернуться</button>
+</section>
+
+<section class="room" id="profile">
+  <h2>Профиль сознания</h2>
+  <div id="profileData"></div>
+  <button onclick="goToRoom('tests')">Назад к комнатам</button>
+</section>
+
+<script src="script.js"></script>
+</body>
+</html>
